@@ -1,4 +1,4 @@
-package antrianAPPS
+package main
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,9 +6,7 @@ import (
 )
 
 func main(){
-	var (
-		router = gin.Default()
-	)
+	router := gin.Default()
 	router.GET("/", ambilapakek)
 	router.Run(":8080")
 }
