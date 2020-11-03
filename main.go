@@ -1,16 +1,8 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"net/http"
-	"strings"
-
-	firebase "firebase.google.com/go"
-	"firebase.google.com/go/db"
 	"github.com/gin-gonic/gin"
-	"google.golang.org/api/option"
+
 
 )
 

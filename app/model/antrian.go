@@ -27,7 +27,7 @@ func GetAntrian()(bool,error, []map[string]interface{}){
 
 
 func AddAntrian() (bool,error){
-	_, _, dataAntrian := getAntrian()
+	_, _, dataAntrian := GetAntrian()
 	var IDs string
 	var antrianRef *db.Ref
 	ref := client.NewRef("antrian")
