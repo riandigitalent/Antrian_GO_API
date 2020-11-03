@@ -2,19 +2,13 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-
-
-)
-
-//var data []Antrian
-
-
-
-
-
+	"github.com/riandigitalent/Antrian_GO_API/app/controller"
+	)
 
 func main(){
 	router := gin.Default()
+
+	router.LoadHTMLGlob("views/*")
 	//setting endpoint API
 	router.GET("/", HomePage)
 	router.GET("/antrian/status", GetAntrianHandler)
