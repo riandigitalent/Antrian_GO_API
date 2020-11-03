@@ -126,7 +126,7 @@ func deleteAntrian(idAntrian string)(bool,error){
 
 //handler
 func GetAntrianHandler(c *gin.Context){
-	flag, data, err := getAntrian()
+	flag, err, data := getAntrian()
 	if flag{
 		c.JSON(http.StatusOK,map[string]interface{}{
 			"status" : "sukses, berikut daftar antrian",
@@ -158,7 +158,7 @@ idAntrian := c.Param("idAntrian")
 flag, err := updateAntrian(idAntrian)
 	if flag{
 		c.JSON(http.StatusOK,map[string]interface{}{
-			"status" : "Antrian Berhasil di tambahkan",
+			"status" : "Antrian Berhasil di ubah",
 		})
 	} else {
 		c.JSON(http.StatusBadGateway,map[string]interface{}{
@@ -172,7 +172,7 @@ func DeleteAntrianHandler(c *gin.Context){
 	flag, err := deleteAntrian(idAntrian)
 	if flag{
 		c.JSON(http.StatusOK,map[string]interface{}{
-			"status" : "Antrian Berhasil di tambahkan",
+			"status" : "Antrian Berhasil di di delete",
 		})
 	} else {
 		c.JSON(http.StatusBadGateway,map[string]interface{}{
