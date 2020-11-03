@@ -1,12 +1,42 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"strings"
+
+	firebase "firebase.google.com/go"
+	"firebase.google.com/go/db"
+	"github.com/gin-gonic/gin"
+	"google.golang.org/api/option"
+
 )
 
-var data []Antrian
+//var data []Antrian
+
+var client *db.Client
+var ctx context.Context
+
+func init(){
+	ctx = context.Background()
+	conf := &firebase.Config{
+		DatabaseURL:"https://antriango.firebaseio.com/",
+	}
+	//ambil service account key dari json file content
+	opt := option.WithCredentialsFile("firebasekunci.json")
+
+	//inisiasi aplikasi dengan service account, dan kasih admin leverl
+	app,err := firebase.NewApp(ctx,conf,opt)
+	if err != nil{
+		log.Fatalln("error inisiasi app :", err)
+	}
+	client,err =app.Database(ctx)
+	if err !=nil {
+		log.Fatalln("error inisiasi database client", err)
+	}
+}
 
 type Antrian struct {
 	ID string `json:"id"`
@@ -21,47 +51,76 @@ func main(){
 	router.POST("/antrian/add", AddAntrianHandler)
 	router.PUT("/antrian/edit/id/:idAntrian", UpdateAntrianHandler)
 	router.DELETE("/antrian/id/:idAntrian/delete", DeleteAntrianHandler)
+	router.GET("/antrian/list",PageAntrianHandler)
 	router.Run(":8080")
 }
 
 
 //model
-func getAntrian()(bool, []Antrian,error){
-	return true, data, nil
+func getAntrian()(bool,error, []map[string]interface{}){
+	var data []map[string]interface{}
+	ref := client.NewRef("antrian")
+	if err := ref.Get(ctx,&data); err != nil {
+		log.Fatalln("error baca data dari DB:", err)
+		return false,err,nil
+	}
+
+	return true, nil, data
 }
+
+
+
 func addAntrian() (bool,error){
-	_, dataAntrian, _ :=getAntrian()
+	_, _, dataAntrian := getAntrian()
 	var IDs string
+	var antrianRef *db.Ref
+	ref := client.NewRef("antrian")
+
 
 	if dataAntrian==nil {
 		IDs = fmt.Sprintf("B-0")
+		antrianRef=ref.Child("0")
 	}else {
 		IDs = fmt.Sprintf("B-%d", len(dataAntrian))
+		antrianRef = ref.Child(fmt.Sprintf("%d",len(dataAntrian)))
 	}
-	data= append(data, Antrian{
+	antrian :=  Antrian{
 		ID: IDs,
 		STATUS: false,
-	})
+	}
+	if err := antrianRef.Set(ctx,antrian); err !=nil{
+		log.Fatal(err)
+		return false,err
+	}
 	return true,nil
 }
 
 func updateAntrian(idAntrian string) (bool,error){
-	for i := range data {
-		if data[i].ID == idAntrian{
-			data[i].STATUS =true
-		break
-		}
+	ref := client.NewRef("antrian")
+	id := strings.Split(idAntrian,"-")
+	childRef := ref.Child(id[1])
+
+	antrian :=  Antrian{
+		ID: idAntrian,
+		STATUS: true,
+	}
+	if err := childRef.Set(ctx,antrian); err !=nil{
+		log.Fatal(err)
+		return false,err
 	}
 	return true,nil
 }
 
 func deleteAntrian(idAntrian string)(bool,error){
-	for i := range data {
-		if data[i].ID == idAntrian{
-			data = append(data[:i],data[i+1:]...)
-		}
+	ref := client.NewRef("antrian")
+	id := strings.Split(idAntrian,"-")
+	childRef := ref.Child(id[1])
+
+	if err:= childRef.Delete(ctx); err != nil{
+		log.Fatal(err)
+		return false,err
 	}
-	return true,nil
+	return  true,nil
 }
 
 
@@ -131,3 +190,25 @@ func HomePage(c *gin.Context){
 	return
 }
 
+func PageAntrianHandler(c *gin.Context) {
+	flag, err, result := getAntrian()
+	var currentAntrian map[string]interface{}
+
+	for _, item := range result {
+		if item != nil {
+			currentAntrian = item
+			break
+		}
+	}
+
+	if flag && len(result) > 0 {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"antrian": currentAntrian["id"],
+		})
+	} else {
+		c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"status": "failed",
+			"error":  err,
+		})
+	}
+}
