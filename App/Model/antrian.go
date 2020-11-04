@@ -1,4 +1,4 @@
-package model
+package Model
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ type Antrian struct {
 	STATUS bool `json:"status"`
 }
 
-//model
+//Model
 func GetAntrian()(bool,error, []map[string]interface{}){
 	var data []map[string]interface{}
 	ref := client.NewRef("antrian")
