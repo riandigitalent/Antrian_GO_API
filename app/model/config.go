@@ -1,4 +1,4 @@
-package Model
+package model
 
 import (
 	"context"
@@ -22,7 +22,7 @@ func init(){
 	//inisiasi aplikasi dengan service account, dan kasih admin leverl
 	app,err := firebase.NewApp(ctx,conf,opt)
 	if err != nil{
-		log.Fatalln("error inisiasi App :", err)
+		log.Fatalln("error inisiasi app :", err)
 	}
 	client,err =app.Database(ctx)
 	if err !=nil {

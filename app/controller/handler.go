@@ -1,14 +1,14 @@
-package Controller
+package controller
 
 import (
-	"antrianAPPS/App/Model"
 	"github.com/gin-gonic/gin"
+	"github.com/riandigitalent/Antrian_GO_API/app/model"
 	"net/http"
 )
 
 //handler
 func GetAntrianHandler(c *gin.Context){
-	flag, err, data := Model.GetAntrian()
+	flag, err, data := model.GetAntrian()
 	if flag{
 		c.JSON(http.StatusOK,map[string]interface{}{
 			"status" : "sukses, berikut daftar antrian",
@@ -23,7 +23,7 @@ func GetAntrianHandler(c *gin.Context){
 }
 
 func AddAntrianHandler(c *gin.Context){
-	flag, err := Model.AddAntrian()
+	flag, err := model.AddAntrian()
 	if flag{
 		c.JSON(http.StatusOK,map[string]interface{}{
 			"status" : "Antrian Berhasil di tambahkan",
@@ -37,7 +37,7 @@ func AddAntrianHandler(c *gin.Context){
 }
 func UpdateAntrianHandler(c *gin.Context){
 	idAntrian := c.Param("idAntrian")
-	flag, err := Model.UpdateAntrian(idAntrian)
+	flag, err := model.UpdateAntrian(idAntrian)
 	if flag{
 		c.JSON(http.StatusOK,map[string]interface{}{
 			"status" : "Antrian Berhasil di ubah",
@@ -51,7 +51,7 @@ func UpdateAntrianHandler(c *gin.Context){
 }
 func DeleteAntrianHandler(c *gin.Context){
 	idAntrian := c.Param("idAntrian")
-	flag, err := Model.DeleteAntrian(idAntrian)
+	flag, err := model.DeleteAntrian(idAntrian)
 	if flag{
 		c.JSON(http.StatusOK,map[string]interface{}{
 			"status" : "Antrian Berhasil di di delete",
@@ -73,7 +73,7 @@ func HomePage(c *gin.Context){
 }
 
 func PageAntrianHandler(c *gin.Context) {
-	flag, err, result := Model.GetAntrian()
+	flag, err, result := model.GetAntrian()
 	var currentAntrian map[string]interface{}
 
 	for _, item := range result {
