@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/riandigitalent/Antrian_GO_API/app/controller"
+	"github.com/riandigitalent/Antrian_GO_API/App/Controller"
 	)
 
 func main(){
